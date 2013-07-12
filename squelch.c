@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
 
 
   unsigned short bufptr = 0;
-  short int      pcm;
-  short int      outbuf[buflen];
+  int            pcm;
+  int            outbuf[buflen];
   short int      silcount = 0, ampcount = 0;
   double         amp = 1.0;
   bool           silent = false, falling = false, rising = false;
@@ -31,8 +31,8 @@ int main(int argc, char **argv) {
     switch (c) {
       case 'b':
         ssize = atoi(optarg);
-        if (ssize % 8 != 0 || ssize < 8) {
-          fprintf (stderr,"Sample size must be a multiple of 8 bits.\n");
+        if (ssize != 8 && ssize != 16 || ssize != 24) {
+          fprintf (stderr,"Sample size must be 8, 16, or 24 bits.\n");
           return EXIT_FAILURE;
         }
         break;
