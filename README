@@ -24,9 +24,6 @@ Usage
 Command line options
 --------------------
 
-  -b BITS
-      size of a single sample, in bits (8, 16, or 24); defaults to 16
-
   -u SAMPLES
       output buffer length, samples; defaults to 2048
 

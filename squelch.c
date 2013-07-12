@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
 
 
   unsigned short bufptr = 0;
-  int            pcm;
-  int            outbuf[buflen];
+  short int      pcm;
+  short int      outbuf[buflen];
   short int      silcount = 0, ampcount = 0;
   double         amp = 1.0;
   bool           silent = false, falling = false, rising = false;
@@ -27,15 +27,15 @@ int main(int argc, char **argv) {
 
 
   /* Command line options */
-  while ((c = getopt (argc, argv, "b:u:l:d:t:")) != -1)     
+  while ((c = getopt (argc, argv, "u:l:d:t:")) != -1)     
     switch (c) {
-      case 'b':
+      /*case 'b':
         ssize = atoi(optarg);
         if (ssize != 8 && ssize != 16 || ssize != 24) {
           fprintf (stderr,"Sample size must be 8, 16, or 24 bits.\n");
           return EXIT_FAILURE;
         }
-        break;
+        break;*/
       case 'u':
         buflen = atoi(optarg);
         break;
@@ -54,7 +54,6 @@ int main(int argc, char **argv) {
       default:
         break;
     }
-
 
   /* Actual signal */
   while (read(0, &pcm, ssize/8)) {
