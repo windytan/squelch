@@ -20,7 +20,7 @@ make
 Usage
 -----
 
-some_proram --producing --samples | squelch [OPTION]... | ...
+some_program --producing --samples | squelch [OPTION]... | ...
 
 
 Command line options
