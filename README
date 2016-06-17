@@ -13,12 +13,14 @@ Stream format is assumed to be raw 16-bit signed-integer PCM.
 
 Compiling
 ---------
-gcc -o squelch squelch.c
+
+make
 
 
 Usage
 -----
-... | squelch [OPTION]... | ...
+
+some_proram --producing --samples | squelch [OPTION]... | ...
 
 
 Command line options
