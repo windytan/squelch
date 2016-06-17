@@ -16,26 +16,17 @@ int main(int argc, char **argv) {
   unsigned int   duration = 4096;
   unsigned int   ttime    = 512;
 
-
   unsigned short bufptr = 0;
   short int      pcm;
   short int      outbuf[buflen];
   short int      silcount = 0, ampcount = 0;
-  double         amp = 1.0;
+  float          amp = 1.0f;
   bool           silent = false, falling = false, rising = false;
   int            c;
 
-
   /* Command line options */
-  while ((c = getopt (argc, argv, "u:l:d:t:")) != -1)     
+  while ((c = getopt (argc, argv, "u:l:d:t:")) != -1)
     switch (c) {
-      /*case 'b':
-        ssize = atoi(optarg);
-        if (ssize != 8 && ssize != 16 || ssize != 24) {
-          fprintf (stderr,"Sample size must be 8, 16, or 24 bits.\n");
-          return EXIT_FAILURE;
-        }
-        break;*/
       case 'u':
         buflen = atoi(optarg);
         break;
@@ -62,10 +53,11 @@ int main(int argc, char **argv) {
     if (silent) {
 
       if (falling) {
-        amp = 1.0 * (ttime - ampcount) / ttime;
+        amp = (float)(ttime - ampcount) / ttime;
         outbuf[bufptr] = pcm * amp;
         ampcount ++;
-        if (ampcount > ttime) falling = false;
+        if (ampcount > ttime)
+          falling = false;
       } else {
         outbuf[bufptr] = 0x0000;
       }
@@ -82,7 +74,7 @@ int main(int argc, char **argv) {
     } else {
 
       if (rising) {
-        amp = 1.0 * ampcount / ttime;
+        amp = ((float)ampcount) / ttime;
         outbuf[bufptr] = pcm * amp;
         ampcount ++;
         if (ampcount > ttime) rising = false;
@@ -102,7 +94,8 @@ int main(int argc, char **argv) {
     }
 
     if (++bufptr == buflen) {
-      if (!write(1, &outbuf, 2 * buflen)) return (EXIT_FAILURE);
+      if (!write(1, &outbuf, 2 * buflen))
+        return (EXIT_FAILURE);
       fflush(stdout);
       bufptr = 0;
     }
