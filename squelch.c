@@ -33,11 +33,9 @@ int main(int argc, char **argv) {
         break;
       case 'l':
         limit = atoi(optarg);
-        fprintf (stderr, "`-%c': %d\n", optopt, limit);
         break;
       case 'L':
         limit = lroundf(pow(10, atof(optarg)/20.0) * pow(2, 15));
-        fprintf (stderr, "`-%c': %d\n", optopt, limit);
         break;
       case 'd':
         duration = atoi(optarg);
