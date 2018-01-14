@@ -1,4 +1,4 @@
 CC=gcc
 
 squelch: squelch.c
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ -lm
