@@ -30,7 +30,10 @@ Command line options
       output buffer length, samples; defaults to 2048
 
   -l LEVEL
-      silence threshold, in absolute amplitude; defaults to 1024 (-36 dB)
+      silence threshold, in absolute amplitude; defaults to 1024 (-30 dB)
+
+  -L LEVEL
+      silence threshold, in dB; internally sets absolute amplitude; (e.g. `-L -30`)
 
   -d SAMPLES
       duration of silence to trigger squelch, in samples; defaults to 4096
@@ -38,6 +41,7 @@ Command line options
   -t SAMPLES
       transition time, in samples; defaults to 512
 
+If both level options are set, the latter wins.
 
 Copying
 -------

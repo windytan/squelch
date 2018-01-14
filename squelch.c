@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <math.h>
 
 int main(int argc, char **argv) {
 
@@ -25,13 +26,18 @@ int main(int argc, char **argv) {
   int            c;
 
   /* Command line options */
-  while ((c = getopt (argc, argv, "u:l:d:t:")) != -1)
+  while ((c = getopt (argc, argv, "u:l:L:d:t:")) != -1)
     switch (c) {
       case 'u':
         buflen = atoi(optarg);
         break;
       case 'l':
         limit = atoi(optarg);
+        fprintf (stderr, "`-%c': %d\n", optopt, limit);
+        break;
+      case 'L':
+        limit = lroundf(pow(10, atof(optarg)/20.0) * pow(2, 15));
+        fprintf (stderr, "`-%c': %d\n", optopt, limit);
         break;
       case 'd':
         duration = atoi(optarg);
