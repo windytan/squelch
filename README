@@ -4,7 +4,7 @@ squelch
 
 squelch zeroes an incoming PCM signal to digital silence when sufficiently quiet
 for a sufficient time. This can be helpful when compressing a recorded signal
-using RLE, for example.
+using RLE (FLAC), for example.
 
 Signal comes in through stdin and the squelched signal is written to stdout.
 
