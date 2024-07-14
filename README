@@ -8,7 +8,12 @@ using RLE, for example.
 
 Signal comes in through stdin and the squelched signal is written to stdout.
 
-Stream format is assumed to be raw 16-bit signed-integer PCM.
+Stream format is assumed to be raw single-channel 16-bit signed-integer PCM.
+
+Dependencies
+------------
+
+* C compiler
 
 
 Compiling

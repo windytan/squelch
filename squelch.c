@@ -2,107 +2,88 @@
  *
  * Oona Räisänen 2012 */
 
+#include <getopt.h>
+#include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <stdbool.h>
-#include <math.h>
 
 int main(int argc, char **argv) {
-
   /* Defaults */
-  short int      ssize    = 16;
-  unsigned int   buflen   = 2048;
-  int            limit    = 1024;
-  unsigned int   duration = 4096;
-  unsigned int   ttime    = 512;
+  unsigned int    buflen       = 2048;
+  int             limit        = 1024;
+  unsigned int    duration     = 4096;
+  unsigned int    ttime        = 512;
 
-  unsigned short bufptr = 0;
-  short int      pcm;
-  short int      outbuf[buflen];
-  short int      silcount = 0, ampcount = 0;
-  float          amp = 1.0f;
-  bool           silent = false, falling = false, rising = false;
-  int            c;
+  short int       pcm[buflen];
+  short int       outbuf[buflen];
+  unsigned int    silence_count = 0;
+  bool            silent = false, falling = false, rising = false;
+  int             c;
 
   /* Command line options */
-  while ((c = getopt (argc, argv, "u:l:L:d:t:")) != -1)
-    switch (c) {
-      case 'u':
-        buflen = atoi(optarg);
-        break;
-      case 'l':
-        limit = atoi(optarg);
-        break;
-      case 'L':
-        limit = lroundf(pow(10, atof(optarg)/20.0) * pow(2, 15));
-        break;
-      case 'd':
-        duration = atoi(optarg);
-        break;
-      case 't':
-        ttime = atoi(optarg);
-        break;
-      case '?':
-        fprintf (stderr, "Unknown option `-%c'.\n", optopt);
-        return EXIT_FAILURE;
-      default:
-        break;
+  while ((c = getopt(argc, argv, "u:l:L:d:t:")) != -1) switch (c) {
+      case 'u': buflen = atoi(optarg); break;
+      case 'l': limit = atoi(optarg); break;
+      case 'L': limit = lroundf(pow(10, atof(optarg) / 20.0) * pow(2, 15)); break;
+      case 'd': duration = atoi(optarg); break;
+      case 't': ttime = atoi(optarg); break;
+      case '?': fprintf(stderr, "Unknown option `-%c'.\n", optopt); return EXIT_FAILURE;
+      default:  break;
     }
 
+  // Grows up to and shrinks from ttime as the squelch de/activates
+  unsigned int bellow = ttime;
+
   /* Actual signal */
-  while (read(0, &pcm, ssize/8)) {
+  while (read(0, &pcm, buflen * sizeof(short int))) {
+    for (unsigned int buffer_index = 0; buffer_index < buflen; buffer_index++) {
 
-    /* Squelch is active */
-    if (silent) {
+      /* Squelch is active */
+      if (silent) {
+        if (falling) {
+          const float amplitude = (float)bellow / ttime;
+          outbuf[buffer_index]        = pcm[buffer_index] * amplitude;
+          bellow--;
+          if (bellow == 0)
+            falling = false;
+        } else {
+          outbuf[buffer_index] = 0x0000;
+        }
 
-      if (falling) {
-        amp = (float)(ttime - ampcount) / ttime;
-        outbuf[bufptr] = pcm * amp;
-        ampcount ++;
-        if (ampcount > ttime)
-          falling = false;
+        /* Signal comes back */
+        if (abs(pcm[buffer_index]) > limit) {
+          silent        = false;
+          rising        = true;
+          silence_count = 0;
+        }
+
       } else {
-        outbuf[bufptr] = 0x0000;
-      }
+        /* Squelch not active */
+        if (rising) {
+          const float amplitude = (float)bellow / ttime;
+          outbuf[buffer_index]        = pcm[buffer_index] * amplitude;
+          bellow++;
+          if (bellow == ttime)
+            rising = false;
+        } else {
+          outbuf[buffer_index] = pcm[buffer_index];
+        }
 
-      /* Signal comes back */
-      if (abs(pcm) > limit) {
-        silent   = false;
-        rising   = true;
-        ampcount = 0;
-        silcount = 0;
-      }
-
-    /* Squelch not active */
-    } else {
-
-      if (rising) {
-        amp = ((float)ampcount) / ttime;
-        outbuf[bufptr] = pcm * amp;
-        ampcount ++;
-        if (ampcount > ttime) rising = false;
-      } else {
-        outbuf[bufptr] = pcm;
-      }
-
-      /* Signal is silent */
-      if (abs(pcm) < limit) {
-        silcount ++;
-        if (silcount > duration) {
-          silent   = true;
-          falling  = true;
-          ampcount = 0;
+        /* Signal goes silent */
+        if (abs(pcm[buffer_index]) < limit) {
+          silence_count++;
+          if (silence_count > duration) {
+            silent  = true;
+            falling = true;
+          }
         }
       }
     }
 
-    if (++bufptr == buflen) {
-      if (!write(1, &outbuf, 2 * buflen))
+    if (!write(1, &outbuf, sizeof(short int) * buflen))
         return (EXIT_FAILURE);
       fflush(stdout);
-      bufptr = 0;
-    }
-
   }
 }

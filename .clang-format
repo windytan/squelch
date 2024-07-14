@@ -1,0 +1,16 @@
+---
+BasedOnStyle: Google
+IndentWidth: 2
+---
+Language: Cpp
+ColumnLimit: 100
+AllowShortIfStatementsOnASingleLine: false
+AlignArrayOfStructures: Left
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveDeclarations: AcrossEmptyLines
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortCaseLabelsOnASingleLine: true
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: true
+IncludeBlocks: Preserve
