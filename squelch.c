@@ -11,16 +11,14 @@
 
 int main(int argc, char **argv) {
   /* Defaults */
-  unsigned int    buflen       = 2048;
-  int             limit        = 1024;
-  unsigned int    duration     = 4096;
-  unsigned int    ttime        = 512;
+  unsigned int buflen   = 2048;
+  int          limit    = 1024;
+  unsigned int duration = 4096;
+  unsigned int ttime    = 512;
 
-  short int       pcm[buflen];
-  short int       outbuf[buflen];
-  unsigned int    silence_count = 0;
-  bool            silent = false, falling = false, rising = false;
-  int             c;
+  unsigned int silence_count = 0;
+  bool         silent = false, falling = false, rising = false;
+  int          c;
 
   /* Command line options */
   while ((c = getopt(argc, argv, "u:l:L:d:t:")) != -1) switch (c) {
@@ -35,16 +33,17 @@ int main(int argc, char **argv) {
 
   // Grows up to and shrinks from ttime as the squelch de/activates
   unsigned int bellow = ttime;
+  short int    pcm[buflen];
+  short int    outbuf[buflen];
 
   /* Actual signal */
   while (read(0, &pcm, buflen * sizeof(short int))) {
     for (unsigned int buffer_index = 0; buffer_index < buflen; buffer_index++) {
-
       /* Squelch is active */
       if (silent) {
         if (falling) {
           const float amplitude = (float)bellow / ttime;
-          outbuf[buffer_index]        = pcm[buffer_index] * amplitude;
+          outbuf[buffer_index]  = pcm[buffer_index] * amplitude;
           bellow--;
           if (bellow == 0)
             falling = false;
@@ -63,7 +62,7 @@ int main(int argc, char **argv) {
         /* Squelch not active */
         if (rising) {
           const float amplitude = (float)bellow / ttime;
-          outbuf[buffer_index]        = pcm[buffer_index] * amplitude;
+          outbuf[buffer_index]  = pcm[buffer_index] * amplitude;
           bellow++;
           if (bellow == ttime)
             rising = false;
@@ -83,7 +82,7 @@ int main(int argc, char **argv) {
     }
 
     if (!write(1, &outbuf, sizeof(short int) * buflen))
-        return (EXIT_FAILURE);
-      fflush(stdout);
+      return (EXIT_FAILURE);
+    fflush(stdout);
   }
 }
