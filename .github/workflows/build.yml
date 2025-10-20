@@ -13,24 +13,28 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: make
-      run: make EXTRA_CFLAGS=" -Werror"
+    - name: Build (with UBSan)
+      run: make ubsan EXTRA_CFLAGS=" -Werror"
+    - name: Run tests
+      run: make test
 
-  build-ubuntu-20-04:
-    runs-on: ubuntu-20.04
+  build-ubuntu-24-04:
+    runs-on: ubuntu-24.04
 
     steps:
     - uses: actions/checkout@v4
-    - name: make
-      run: make EXTRA_CFLAGS=" -Werror"
+    - name: Build (with UBSan)
+      run: make ubsan EXTRA_CFLAGS=" -Werror"
+    - name: Run tests
+      run: make test
 
-  build-debian-buster:
+  build-debian-bullseye:
     runs-on: ubuntu-latest
-    container: debian:buster
+    container: debian:bullseye
 
     steps:
     - uses: actions/checkout@v4
     - name: Install dependencies (apt-get)
       run: apt-get update && apt-get -y install build-essential
-    - name: make
+    - name: Simple build (no tests / UBSan)
       run: make EXTRA_CFLAGS=" -Werror"
