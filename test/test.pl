@@ -59,17 +59,17 @@ sub testExeRunnable {
 sub testOutputLength {
   print "\nOutput length should match input\n";
 
-  my $length_in_samples = 48000;
-  makeTestFile( [ $length_in_samples, 0 ] );
+  my $input_length = 48000;
+  makeTestFile( [ $input_length, 0 ] );
 
   system( $binary. "<" . $input_file . ">" . $output_file );
 
-  my $output_length_in_samples = getFileLengthInSamples($output_file);
+  my @output_samples = getSamples($output_file);
 
   check(
-    $output_length_in_samples == $length_in_samples,
-    "Should preserve number of samples "
-      . "(expected: $length_in_samples, got: $output_length_in_samples)"
+    @output_samples == $input_length,
+    "Should preserve number of samples (expected: $input_length, got: "
+      . scalar(@output_samples) . ")"
   );
 }
 
@@ -181,13 +181,6 @@ sub writeTestBeep {
     my $wave       = ( $wave_phase < 3 ) ? 1 : ( $wave_phase < 6 ) ? -1 : 0;
     print $fh pack( 's<', $wave * 32767 * $amplitude );
   }
-}
-
-# getFileLengthInSamples(filename) -> size_in_samples
-sub getFileLengthInSamples {
-  my ($filename) = @_;
-
-  return ( ( -s $filename ) / $sample_size_in_bytes );
 }
 
 # bool is expected to be true, otherwise fail with message

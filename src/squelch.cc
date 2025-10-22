@@ -48,7 +48,7 @@ inline Options getOptions(int argc, char **argv) {
 
   // clang-format off
   const std::array<option, 6> long_options{{
-      {"buffer-length",        no_argument,       nullptr, 'u'},
+      {"buffer-length",        required_argument, nullptr, 'u'},
       {"amplitude-limit-abs",  required_argument, nullptr, 'l'},
       {"amplitude-limit-db",   required_argument, nullptr, 'L'},
       {"min-silence-duration", required_argument, nullptr, 'd'},

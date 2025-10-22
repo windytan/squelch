@@ -52,6 +52,6 @@ Defaults to 4096. Unmuting will happen even if a single sample gets above the li
 `--fade-time SAMPLES` / `-t SAMPLES`
 
 Transition time, in samples; defaults to 512.
-This is how long it takes to fade out the signal after `--silence-duration` has passed;
+This is how long it takes to smoothly fade the signal out after `--silence-duration` has passed;
 and how long it takes to fade back in after the first sign of signal.
-Use 0 to disable fading.
+Use 0 to disable fading (it'll just switch instantly with a snap).
