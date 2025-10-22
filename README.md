@@ -1,12 +1,12 @@
 **squelch** works like a noise gate: it replaces an incoming PCM signal with
 digital silence when it's been sufficiently quiet for a sufficient time.
 
-The input is assumed to be raw single-channel 16-bit signed-integer PCM. The
+The input is assumed to be raw 16-bit signed-integer PCM. The
 signal comes in through stdin and the output signal is written to
 stdout.
 
-*squelch* can be used to remove dithering from intended silence; to block empty radio channel noise; etc. It was
-originally made as a preprocessing step for lossless compression.
+The program treats the signal as a single channel, but it should work okay
+for stereo and IQ as well. It won't work correctly with 8-bit input though.
 
 ## Dependencies
 
@@ -65,10 +65,15 @@ Raspberry Pi 3 Model B Plus Rev 1.3
 $ git rev-parse HEAD
 293ff5023afe4d96442641ada6226de5728512e9
 
-$ pv -k -S -s 100M -F "%{average-rate}" < /dev/random | ./build/squelch > /dev/null
-(84.5MB/s)
+$ pv -k -S -s 1000M -F "%{average-rate}" < /dev/random | ./build/squelch > /dev/null
+(88.9MB/s)
 
-$ # == 42 Msps
+$ pv -k -S -s 1000M -F "%{average-rate}" < /dev/zero | ./build/squelch > /dev/null
+( 197MB/s)
+
+$ # RasPi 3B+:
+$ # From /dev/random: 44 Msps single-channel
+$ # From /dev/zero:   98 Msps single-channel
 ```
 
 ```
@@ -81,5 +86,10 @@ $ git rev-parse HEAD
 $ pv -k -S -s 1000M -F "%{average-rate}" < /dev/random | ./build/squelch --buffer-length 65536 > /dev/null
 ( 373MB/s)
 
-$ # == 186 Msps
+$ pv -k -S -s 1000M -F "%{average-rate}" < /dev/zero | ./build/squelch --buffer-length 65536 > /dev/null
+(1.57GB/s)
+
+$ # Apple M1:
+$ # From /dev/random: 186 Msps single-channel
+$ # From /dev/zero:   785 Msps single-channel
 ```
