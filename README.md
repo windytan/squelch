@@ -29,41 +29,20 @@ some_program --producing --samples | squelch [OPTION]... | ...
 
 All options are optional and have somewhat reasonable defaults.
 
-`--buffer-length SAMPLES` / `-u SAMPLES`
-
-I/O buffer length, in samples; defaults to 2048.
-This can be used to control the frequency of output flushing, to adjust performance.
-(It doesn't affect the output samples or squelch behavior in any way.)
-
-`--amplitude-limit-abs LEVEL`/  `-l LEVEL`
-
-Silence threshold, in absolute (semi-)amplitude; defaults to 1024 (-30 dBFS).
-The input must stay below this to get squelched.
-
-`--amplitude-limit-db LEVEL` /  `-L LEVEL`
-
-Same as `-l`, but given in dBFS; e.g. `-L -30`.
-
-`--silence-duration SAMPLES`/ `-d SAMPLES`
-
-The signal gets muted when this many successive samples are below the silence threshold.
-Defaults to 4096. Unmuting will happen even if a single sample gets above the limit.
-
-`--fade-time SAMPLES` / `-t SAMPLES`
-
-Transition time, in samples; defaults to 512.
-This is how long it takes to smoothly fade the signal out after `--silence-duration` has passed;
-and how long it takes to fade back in after the first sign of signal.
-Use 0 to disable fading (it'll just switch instantly with a snap).
+| Long option | Short option | Default | Description |
+| ----------- | ------------ | ------- | ----------- |
+| `--amplitude-limit-db` | `-L` | -30 | Silence threshold in dBFS. The input must stay below this to get squelched. |
+| `--amplitude-limit-abs` | `-l` | 1024 (-30 dBFS) | Same as `-L`, but in absolute (semi-)amplitude. You can provide one or the other. |
+| `--silence-duration` | `-d` | 4096 | The signal gets muted when this many successive samples are below the silence threshold. Unmuting will happen even if a single sample gets above the limit. |
+| `--fade-time` | `-t` | 512 | Transition time, in samples. This is how long it takes to smoothly fade the signal out after `--silence-duration` has passed; and how long it takes to fade back in after the first sign of signal.<br/>Use 0 to disable fading; it'll just instantly switch with a 'snap'. |
+| `--buffer-length` | `-u` | 2048 | I/O buffer length, in samples. This can be used to control the frequency of output flushing, to fine-tune performance. It doesn't affect the output samples or squelch behavior in any way. |
 
 ## What's the throughput?
 
 ```
-$ cat /sys/firmware/devicetree/base/model
-Raspberry Pi 3 Model B Plus Rev 1.3
-
-$ git rev-parse HEAD
+$ git rev-parse HEAD && cat /sys/firmware/devicetree/base/model
 293ff5023afe4d96442641ada6226de5728512e9
+Raspberry Pi 3 Model B Plus Rev 1.3
 
 $ pv -k -S -s 1000M -F "%{average-rate}" < /dev/random | ./build/squelch > /dev/null
 (88.9MB/s)
@@ -77,11 +56,9 @@ $ # From /dev/zero:   98 Msps single-channel
 ```
 
 ```
-$ sysctl hw.model
-hw.model: MacBookPro18,3
-
-$ git rev-parse HEAD
+$ git rev-parse HEAD && sysctl hw.model
 293ff5023afe4d96442641ada6226de5728512e9
+hw.model: MacBookPro18,3
 
 $ pv -k -S -s 1000M -F "%{average-rate}" < /dev/random | ./build/squelch --buffer-length 65536 > /dev/null
 ( 373MB/s)
